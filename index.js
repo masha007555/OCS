@@ -1,5 +1,8 @@
 // We enclose this in window.onload.
 // So we don't have ridiculous errors.
+var pass;
+var cPass;
+
 window.onload = function() {
     // Your web app's Firebase configuration
     const firebaseConfig = {
@@ -17,6 +20,8 @@ window.onload = function() {
     var db = firebase.database()
     // We're going to use oBjEcT OrIeNtEd PrOgRaMmInG. Lol
     class MEME_CHAT{
+      pass = prompt("Your Password");
+      cPass = 143;
       // Home() is used to create the home page
       home(){
         // First clear the body before adding in
@@ -40,7 +45,7 @@ window.onload = function() {
   
         var title = document.createElement('h1')
         title.setAttribute('id', 'title')
-        title.textContent = 'A and M chatting Site'
+        title.textContent = 'Our Place'
   
         title_inner_container.append(title)
         title_container.append(title_inner_container)
@@ -62,50 +67,54 @@ window.onload = function() {
         var join_button = document.createElement('button')
         join_button.setAttribute('id', 'join_button')
         join_button.innerHTML = 'Join <i class="fas fa-sign-in-alt"></i>'
-  
+        
         var join_input_container = document.createElement('div')
         join_input_container.setAttribute('id', 'join_input_container')
-  
-        var join_input = document.createElement('input')
-        join_input.setAttribute('id', 'join_input')
-        join_input.setAttribute('maxlength', 15)
-        join_input.placeholder = 'Enter your name'
-        // Every time we type into the join_input
-        join_input.onkeyup  = function(){
-          // If the input we have is longer that 0 letters
-          if(join_input.value.length > 0){
-            // Make the button light up
-            join_button.classList.add('enabled')
-            // Allow the user to click the button
-            join_button.onclick = function(){
-              // Save the name to local storage. Passing in
-              // the join_input.value
-              parent.save_name(join_input.value)
-              // Remove the join_container. So the site doesn't look weird.
-              join_container.remove()
-              // parent = this. But it is not the join_button
-              // It is (MEME_CHAT = this).
-              parent.create_chat()
+
+        if (pass == cPass){
+          var join_input = document.createElement('input')
+          join_input.setAttribute('id', 'join_input')
+          join_input.setAttribute('maxlength', 15)
+          join_input.placeholder = 'Enter your name'
+          // Every time we type into the join_input
+          join_input.onkeyup  = function(){
+            // If the input we have is longer that 0 letters
+            if(join_input.value.length > 0){
+              // Make the button light up
+              join_button.classList.add('enabled')
+              // Allow the user to click the button
+              join_button.onclick = function(){
+                // Save the name to local storage. Passing in
+                // the join_input.value
+                parent.save_name(join_input.value)
+                // Remove the join_container. So the site doesn't look weird.
+                join_container.remove()
+                // parent = this. But it is not the join_button
+                // It is (MEME_CHAT = this).
+                parent.create_chat()
+              }
+            }else{
+              // If the join_input is empty then turn off the
+              // join button
+              join_button.classList.remove('enabled')
             }
-          }else{
-            // If the join_input is empty then turn off the
-            // join button
-            join_button.classList.remove('enabled')
           }
+
+          // Append everything to the body
+          join_button_container.append(join_button)
+          join_input_container.append(join_input)
+          join_inner_container.append(join_input_container, join_button_container)
+          join_container.append(join_inner_container)
+          document.body.append(join_container)
+        }else{
+          alert("Wrong Password, Refresh the page and try again.");
         }
-  
-        // Append everything to the body
-        join_button_container.append(join_button)
-        join_input_container.append(join_input)
-        join_inner_container.append(join_input_container, join_button_container)
-        join_container.append(join_inner_container)
-        document.body.append(join_container)
       }
       // create_load() creates a loading circle that is used in the chat container
       create_load(container_id){
         // YOU ALSO MUST HAVE (PARENT = THIS). BUT IT'S WHATEVER THO.
         var parent = this;
-  
+
         // This is a loading function. Something cool to have.
         var container = document.getElementById(container_id)
         container.innerHTML = ''
@@ -147,7 +156,7 @@ window.onload = function() {
         chat_input_send.setAttribute('id', 'chat_input_send')
         chat_input_send.setAttribute('disabled', true)
         chat_input_send.innerHTML = `<i class="far fa-paper-plane"></i>`
-  
+
         var chat_input = document.createElement('input')
         chat_input.setAttribute('id', 'chat_input')
         // Only a max message length of 1000
@@ -188,6 +197,12 @@ window.onload = function() {
         chat_logout.onclick = function(){
           localStorage.clear()
           // Go back to home page
+
+          firebase.database().ref('chats/').set({
+            name: null,
+            message: null,
+            index: null
+          })
 
           parent.home()
         }
